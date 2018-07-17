@@ -1,0 +1,77 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+\title{Homework 1}
+\author{Matthew Skipworth}
+\date{2 July 2018}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\begin{document}
+\ \\
+Matthew Skipworth\\
+TCSS445, Databases\\
+Relational Algebra Homework\\ \\ \\
+1.) Specify the following queries on the COMPANY relational database schema shown the in Figure above, using relational algebra in linear notation. Also show the result of each query as it would apply to the database state of figures above. Show the tree notation for the first two queries.
+
+(a)Retrieve the names of employees in department 4 who work at least 10 hours per week on the 'Computerization' project.\\ 
+$$R(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs)$$ $$:=\ EMPLOYEE \bowtie_{Ssn=Essn} WORKS\char`_ON$$ \\ $$S(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs,Pname,$$ $$Pnumber,Plocation,Dnum)\ := R \bowtie _{Pno=Pnumber} PROJECT$$
+$$\pi_{Fname,Minit,Lname}(\sigma_{hours>=10\ AND\ Pname='Computerization'\ AND\ Dno=4}(S))$$
+$$result: \includegraphics{1a.png}$$
+$$The\ resulting\ tree\ notation\ looks\ something\ like\ this:$$
+$$\includegraphics[scale=0.60]{1a_tree.png}$$
+
+
+(b)List the names of employees who have a dependent with the same first name as themselves.
+$$R (Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Dependent \char`_ name,Sex,$$ $$Bdate,Relation)\ :=\ EMPLOYEE \bowtie_{Ssn=Essn}DEPENDENT$$ \\
+$$\pi_{Fname, Minit, Lname}(\sigma_{Fname=Dependent_name}(R))$$\\
+Based on the current database, this query returned no results.\\
+The tree notation for this query is as follows:
+$$\includegraphics[scale=.6]{1b_tree.png}$$ 
+(c)Find the names of employees that are directly supervised by 'James Borg'.
+$$R\ :=\ \pi_{Ssn}(\sigma_{Fname='James' \cap Lnames='Borg}(EMPLOYEE))$$
+$$\pi_{Fname,Minit,Lname}(\sigma_{Super \char`_ssn=R.ssn}(EMPLOYEE))$$
+$$result: \includegraphics[scale=1]{1c.png}$$\\
+(d)For each project, list the project name and the total hours per week (by all employees) spent on that project.
+
+$$R(Essn,Pno,Hours,Pname,Pnumber,Plocation,Dnum)\ :=\ $$
+$$WORKS\char`_ON \bowtie _{Pno=Pnumber} PROJECT$$
+$$result: \includegraphics[scale=1]{1d.png}$$\\ 
+(e)Retrieve the names of employees who work on every project.
+$$R(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs)$$ $$:=\ EMPLOYEE \bowtie_{Ssn=Essn} WORKS\char`_ON$$ \\ $$S(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs,Pname,$$ $$Pnumber,Plocation,Dnum)\ := R \bowtie _{Dno=Dnum} PROJECT$$
+$$T\ :=\ COUNT(Pname)(PROJECT)$$\\
+$$\pi_{Fname,Minit,Lname}(\gamma_{Ssn}, \sigma_{count(Pno)=T}(S))$$\\
+Based on the current database, this query returns no results.\\ \\
+(f) Retrieve the names of employees who do not work on any project.
+$$R(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs)$$ $$:=\ EMPLOYEE \bowtie_{Ssn=Essn} WORKS\char`_ON$$ \\ $$S(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Essn,Pno,Hrs,Pname,$$ $$Pnumber,Plocation,Dnum)\ := R \bowtie _{Dno=Dnum} PROJECT$$
+
+$$\pi_{Fname,Minit,Lname}(\gamma_{Ssn}, \sigma_{count(Pno)=0}(S))$$\\
+Based on the current database, this query returns no results.\\ 
+(g)For each department, retrieve the department name, and the average salary of employees working in that department.
+$$R(Fnm, Mint, Lnm, Ssn, Bdt, Adrs, Sx, Slry, Sprssn, Dno,Dnm,Dnum,$$ $$Mgr\char`_ssn,Mgr\char`_strt\char`_dt)\ :=\ EMPLOYEE \bowtie_{Dno=Dnumber} DEPARTMENT$$\\ \\
+%$$\pi_{Dname,\ avg(Salary)}(\gamma_{Dname}\ (R))$$
+$$\gamma_{Dname,AVG(Salary)}(R)$$
+$$result:\ \includegraphics[scale=1]{1g.png}$$ \\
+(h)Retrieve each the average salary of all female employees.
+$$\pi_{avg(Salary)}(\sigma_{Sex='F'}(EMPLOYEE))$$\\ 
+(i) Find the names and addresses of employees who work on at least one project located in Houston but whose department has no location in Houston.
+$$R(Essn,Pno,Hours,Pname,Pnum,Ploc,Dnum) := WORKS\char`_ON \bowtie_{Pno=Pnumber}PROJECT$$
+
+$$S(Essn) := \pi_{Essn}(\sigma_{Plocation='Houston'}(R))$$
+
+$$T(Dnum) := \pi_{Dnumber}(\sigma_{Dlocation='Houston'}(DEPT\char`_LOCATIONS)) $$
+
+$$\pi_{Fname,Minit,Lname,Address}(\sigma_{Ssn =S\ AND\ Dno \neq T}(EMPLOYEE))
+$$
+$$result\ \includegraphics[scale=1]{1i.png}$$ \\
+(j)Retrieve the last names of department managers who have no dependents.
+$$R(Mgr\_ssn):=\pi_{Mgr\_ssn}(DEPARTMENT)$$
+$$S(Essn):=\pi_{Essn}(DEPENDENT)$$
+$$\pi_{Lname}(\sigma_{Ssn=R\ AND\ Ssn \neq S})$$
+
+$$ result:\ \includegraphics[scale=1]{1j.png}$$
+2. Consider the two tables T1 and T2 shown in Figure. Show the results of the following operations.\\
+\includegraphics[scale=.5]{2.png}\\ \\
+a. $$\includegraphics[scale=1]{2a.png}$$
+b. $$\includegraphics[scale=1]{2b.png}$$
+c. $$\includegraphics[scale=1]{2c.png}$$
+d.$$\includegraphics[scale=1]{2d.png}$$
+e.$$\includegraphics[scale=1]{2e.png}$$
+\end{document}
